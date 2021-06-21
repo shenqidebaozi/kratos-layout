@@ -15,6 +15,7 @@ init:
 	go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2
 	go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	go get -u github.com/google/wire/cmd/wire
+	go get -u github.com/envoyproxy/protoc-gen-validate
 
 .PHONY: grpc
 # generate grpc code
@@ -41,6 +42,15 @@ errors:
            --proto_path=./third_party \
            --go_out=paths=source_relative:. \
            --go-errors_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: validate
+# generate validate code
+validate:
+	protoc --proto_path=. \
+           --proto_path=./third_party \
+           --go_out=paths=source_relative:. \
+           --validate_out=paths=source_relative,lang=go:. \
            $(API_PROTO_FILES)
 
 .PHONY: proto
@@ -83,6 +93,7 @@ all:
 	make grpc;
 	make http;
 	make errors;
+	make validate;
 	make proto;
 	make swagger;
 	make build;
